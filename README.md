@@ -31,11 +31,11 @@ recommendations. The table should display title and year of each recommended mov
 - ProfileBasedRecommenderServlet
 
 This servlet is mapped to the "/profile" path (see MovieServer code). When this servlet receives a get request, it needs to display
-an page that asks the user to create a profile by rating some movies, and lists the first N movies from the dataset and a textfield next to each of them, that allows the user to enter the rating. 
-It should also display the submit button for submitting the ratings.
+an page that asks the user to create a profile by rating some movies, and lists the first N movies from the dataset and a textfield next to each of them, that allows the user to enter the rating.  N should be a constant defined in the servlet, initially set to 15.
+The webpage should also display the submit button for submitting the ratings.
 Since entering the rating of each movie is time consuming, your servlet should initialize each rating randomly in the range from 0.5 to 5.0, and the user
 can change these ratings as needed. Once the user submits the ratings by clicking the button, the form should be processed by the POST request of the same servlet,
-and display the table with movie recommendations for this user based on the ratings they entered. The table should display title and year of each recommended movie.
+and display the table with 5 movie recommendations for this user based on the ratings they entered. The table should display title and year of each recommended movie. 
 Change the code of lab 3 so that it allows to add a new user  and their ratings to your data structure that stores all ratings. 
 Then you can use the same algorithm as in lab 3 to recommend movies to the user.
 lab5 pdf shows screenshots of the browser as a user interacts with the web application.
