@@ -8,9 +8,18 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
 
+import org.apache.commons.text.StringEscapeUtils;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+
 import static java.lang.Math.sqrt;
 
-public class RatingsCollection {
+public class RatingsCollection extends HttpServlet {
     private TreeMap<Integer, TreeMap<Integer, Double>> ratingsMap;
     private int userMax;
     private TreeMap<Double, TreeMap<Integer, Movie>> rankMovies;
@@ -20,6 +29,31 @@ public class RatingsCollection {
     private ArrayList<Movie> highMovies;
     private ArrayList<Movie> compareMovies;
     private ArrayList<Movie> movieRecs;
+
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+        //GET /echo
+        System.out.println("here");
+        response.setContentType("text/html");
+        response.setStatus(HttpServletResponse.SC_OK);
+
+        PrintWriter out = response.getWriter();
+        out.println("<html><title>MovieServlet</title><body>");
+
+        out.println("<form action=\"rec\" method=\"post\">");
+        out.println("User ID<br/>");
+
+        // notice that the message will be stored in the parameter "usermsg"
+        out.println("<input type=\"text\" name=\"userID\"><br/>");
+        out.println("Number of recommendations<br/>");
+
+        // notice that the message will be stored in the parameter "usermsg"
+        out.println("<input type=\"text\" name=\"numRecs\"><br/>");
+
+        out.println("<input type=\"submit\" value=\"Enter\"></form>");
+
+        out.println("</body></html>");
+    }
 
     /**
      * RatingsCollection constructor.
@@ -193,15 +227,48 @@ public class RatingsCollection {
         }
     }
 
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+        //POST /echo
+        response.setContentType("text/html");
+        response.setStatus(HttpServletResponse.SC_OK);
+
+//
+//        String genre = request.getParameter("userchoice");
+//        genre = StringEscapeUtils.escapeHtml4(genre); // clean up whatever the user typed
+
+        //out.println("<html><title>EchoServlet</title><body>Printer works!</body></html>");
+        System.out.println("sout works!");
+
+        String dir = "/Users/caseydzuong/IdeaProjects/lab5-cdzuong/input/smallSet";
+
+        int user = Integer.parseInt(request.getParameter("userID"));
+        int numberRecs = Integer.parseInt(request.getParameter("numRecs"));
+
+
+        addRatings(dir);
+        rValue(user);
+        rankList(dir);
+        makeStarMovieList(user, dir);
+//
+        PrintWriter out = response.getWriter();
+
+        out.println("<html><body>Printer works!");
+        for (int i = 0; i < numberRecs; i++) {
+            out.println(movieRecs.get(i).getTitle() + "<br>");
+        }
+
+        out.println("</body></html>");
+    }
+
     /**
      * Creates movie recommendations and antirecommendations based on
      * the users whose movie preferences match most with the user in question
      *
      * @param compare userID for the user recommendations are being made for
-     * @param n       number of movie recommendations to make
      * @param dir     directory in which the movie list is found
      */
-    public void makeStarMovieList(int compare, int n, String dir, String write) {
+    public void makeStarMovieList(int compare, String dir) {
         TreeMap<Integer, Double> compareMap = ratingsMap.get(compare);
         for (Double movieIdRatings : rankMovies.keySet()) {
             if (!movieMap.containsKey(movieIdRatings)) {
@@ -232,42 +299,26 @@ public class RatingsCollection {
         movieRecs.addAll(movieMap.get(4.0));
         movieRecs.addAll(movieMap.get(3.0));
 
-        try (PrintWriter recs = new PrintWriter(new File(write + "recs.csv"))) {
-            for (int i = 0; i < n; i++){
-                recs.println(movieRecs.get(i).getTitle());
-            }
 
-//            if (n <= movieMap.get(5.0).size()) {
-//                for (int i = 0; i < n; i++) {
-//                    rec = movieMap.get(5.0).get(i).getTitle() + " (" + movieMap.get(5.0).get(i).getYear() + ")";
-//                    recs.println(rec);
+//        try (PrintWriter antiPrint = new PrintWriter(new File(write + "antirecs.csv"))) {
+//            System.out.println();
+//            for (int i = 0; i < highRUsers.size(); i++) {
+//                for (Integer movieID : ratingsMap.get(highRUsers.get(i)).keySet()) {
+//                    if (ratingsMap.get(highRUsers.get(i)).get(movieID) <= 1.5) {
+//                        antiMovies.add(movieColl.getMap().get(movieID));
+//                    }
 //                }
-//            } else {
-//                System.out.println("Choose a different number.");
 //            }
-            recs.flush();
-        } catch (FileNotFoundException e) {
-            System.out.println("Cannot write recommendations.");
-        }
-        try (PrintWriter antiPrint = new PrintWriter(new File(write + "antirecs.csv"))) {
-            System.out.println();
-            for (int i = 0; i < highRUsers.size(); i++) {
-                for (Integer movieID : ratingsMap.get(highRUsers.get(i)).keySet()) {
-                    if (ratingsMap.get(highRUsers.get(i)).get(movieID) <= 1.5) {
-                        antiMovies.add(movieColl.getMap().get(movieID));
-                    }
-                }
-            }
-
-            antiMovies.sort(new MovieYearComparator());
-            String antirec;
-            for (int i = 0; i < n; i++) {
-                antirec = antiMovies.get(i).getTitle() + " (" + antiMovies.get(i).getYear() + ")";
-                antiPrint.println(antirec);
-            }
-        } catch (FileNotFoundException e) {
-            System.out.println("Cannot write anti-recommendations.");
-        }
+//
+//            antiMovies.sort(new MovieYearComparator());
+//            String antirec;
+//            for (int i = 0; i < n; i++) {
+//                antirec = antiMovies.get(i).getTitle() + " (" + antiMovies.get(i).getYear() + ")";
+//                antiPrint.println(antirec);
+//            }
+//        } catch (FileNotFoundException e) {
+//            System.out.println("Cannot write anti-recommendations.");
+//        }
 
 
     }
