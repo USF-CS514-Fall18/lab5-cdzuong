@@ -23,7 +23,7 @@ public class Ratings {
             File file = new File(filename);
             Scanner input = new Scanner(file);
             input.nextLine();
-            RatingsCollection addRating = new RatingsCollection();
+            RecommenderServlet addRating = new RecommenderServlet();
             while (input.hasNextLine()) {
                 String[] splitLine = input.nextLine().split(",");
                 userId = Integer.parseInt(splitLine[0]);

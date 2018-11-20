@@ -11,8 +11,8 @@ public class MovieServer {
         Server server = new Server(PORT);
 
         ServletHandler handler = new ServletHandler();
-        handler.addServletWithMapping(RatingsCollection.class, "/rec");
-        handler.addServletWithMapping(ProfileBasedRecommenderServlet.class, "/profile");
+        handler.addServletWithMapping(RecommenderServlet.class, "/rec");
+       // handler.addServletWithMapping(ProfileBasedRecommenderServlet.class, "/profile");
 
         server.setHandler(handler);
 
